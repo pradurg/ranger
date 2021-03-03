@@ -186,7 +186,7 @@ public class ServiceProviderHealthcheckTest {
                     })
                     .withHostname(host)
                     .withPort(port)
-                    .withNodeData(new TestShardInfo(shardId))
+                    .withNodeDataSupplier(() ->new TestShardInfo(shardId))
                     .withHealthcheck(healthcheck)
                     .withHealthUpdateIntervalMs(1000)
                     .buildServiceDiscovery();

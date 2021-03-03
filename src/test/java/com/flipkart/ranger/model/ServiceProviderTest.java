@@ -247,7 +247,7 @@ public class ServiceProviderTest {
                 })
                 .withHostname(host)
                 .withPort(port)
-                .withNodeData(new TestShardInfo(shardId))
+                .withNodeDataSupplier(() ->new TestShardInfo(shardId))
                 .withHealthcheck(Healthchecks.defaultHealthyCheck())
                 .withHealthUpdateIntervalMs(1000)
                 .buildServiceDiscovery();

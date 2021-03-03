@@ -65,6 +65,7 @@ public class HealthChecker<T> implements Runnable {
                 || lastHealthcheckStatus != healthcheckStatus) {
             lastUpdatedTime = currentTime;
             ServiceNode<T> serviceNode = serviceProvider.getServiceNode();
+            serviceNode.setNodeData(serviceProvider.getNodeDataSupplier().get());
             serviceNode.setHealthcheckStatus(healthcheckStatus);
             serviceNode.setLastUpdatedTimeStamp(lastUpdatedTime);
             try {

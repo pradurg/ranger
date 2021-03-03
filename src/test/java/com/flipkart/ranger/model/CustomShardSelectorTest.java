@@ -179,7 +179,7 @@ public class CustomShardSelectorTest {
                 })
                 .withHostname(host)
                 .withPort(port)
-                .withNodeData(new TestShardInfo(a,b))
+                .withNodeDataSupplier(() -> new TestShardInfo(a, b))
                 .withHealthcheck(Healthchecks.defaultHealthyCheck())
                 .withHealthUpdateIntervalMs(1000)
                 .buildServiceDiscovery();

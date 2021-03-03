@@ -37,6 +37,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 public class ServiceProvider<T> {
     private static final Logger logger = LoggerFactory.getLogger(ServiceProvider.class);
@@ -45,6 +46,7 @@ public class ServiceProvider<T> {
     private Serializer<T> serializer;
     private CuratorFramework curatorFramework;
     private ServiceNode<T> serviceNode;
+    private Supplier<T> nodeDataSupplier;
     private List<Healthcheck> healthchecks;
     private final int healthUpdateInterval;
     private final int staleUpdateThreshold;
@@ -56,6 +58,7 @@ public class ServiceProvider<T> {
     public ServiceProvider(String serviceName, Serializer<T> serializer,
                            CuratorFramework curatorFramework,
                            ServiceNode<T> serviceNode,
+                           Supplier<T> nodeDataSupplier,
                            List<Healthcheck> healthchecks, int healthUpdateInterval,
                            int staleUpdateThreshold,
                            ServiceHealthAggregator serviceHealthAggregator) {
@@ -63,6 +66,7 @@ public class ServiceProvider<T> {
         this.serializer = serializer;
         this.curatorFramework = curatorFramework;
         this.serviceNode = serviceNode;
+        this.nodeDataSupplier = nodeDataSupplier;
         this.healthchecks = healthchecks;
         this.healthUpdateInterval = healthUpdateInterval;
         this.staleUpdateThreshold = staleUpdateThreshold;
@@ -92,7 +96,7 @@ public class ServiceProvider<T> {
 
     public void stop() throws Exception {
         serviceHealthAggregator.stop();
-        if(null != future) {
+        if (null != future) {
             future.cancel(true);
         }
         curatorFramework.close();
@@ -101,6 +105,11 @@ public class ServiceProvider<T> {
     public ServiceNode<T> getServiceNode() {
         return serviceNode;
     }
+
+    public Supplier<T> getNodeDataSupplier() {
+        return nodeDataSupplier;
+    }
+
 
     public int getStaleUpdateThreshold() {
         return staleUpdateThreshold;
