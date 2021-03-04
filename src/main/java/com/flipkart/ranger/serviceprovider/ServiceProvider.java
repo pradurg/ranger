@@ -37,6 +37,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 public class ServiceProvider<T> {
     private static final Logger logger = LoggerFactory.getLogger(ServiceProvider.class);
@@ -46,6 +47,8 @@ public class ServiceProvider<T> {
     private CuratorFramework curatorFramework;
     private ServiceNode<T> serviceNode;
     private List<Healthcheck> healthchecks;
+
+    private Supplier<Double> healthMetricSupplier;
     private final int healthUpdateInterval;
     private final int staleUpdateThreshold;
     private ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
@@ -56,7 +59,7 @@ public class ServiceProvider<T> {
     public ServiceProvider(String serviceName, Serializer<T> serializer,
                            CuratorFramework curatorFramework,
                            ServiceNode<T> serviceNode,
-                           List<Healthcheck> healthchecks, int healthUpdateInterval,
+                           List<Healthcheck> healthchecks, Supplier<Double> healthMetricSupplier, int healthUpdateInterval,
                            int staleUpdateThreshold,
                            ServiceHealthAggregator serviceHealthAggregator) {
         this.serviceName = serviceName;
@@ -64,6 +67,7 @@ public class ServiceProvider<T> {
         this.curatorFramework = curatorFramework;
         this.serviceNode = serviceNode;
         this.healthchecks = healthchecks;
+        this.healthMetricSupplier = healthMetricSupplier;
         this.healthUpdateInterval = healthUpdateInterval;
         this.staleUpdateThreshold = staleUpdateThreshold;
         this.serviceHealthAggregator = serviceHealthAggregator;
@@ -92,7 +96,7 @@ public class ServiceProvider<T> {
 
     public void stop() throws Exception {
         serviceHealthAggregator.stop();
-        if(null != future) {
+        if (null != future) {
             future.cancel(true);
         }
         curatorFramework.close();
@@ -100,6 +104,10 @@ public class ServiceProvider<T> {
 
     public ServiceNode<T> getServiceNode() {
         return serviceNode;
+    }
+
+    public Supplier<Double> getHealthMetricSupplier() {
+        return healthMetricSupplier;
     }
 
     public int getStaleUpdateThreshold() {

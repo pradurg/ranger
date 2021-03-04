@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 public class ServiceProviderBuilder<T> {
 
@@ -43,6 +44,7 @@ public class ServiceProviderBuilder<T> {
     private String hostname;
     private int port;
     private T nodeData;
+    private Supplier<Double> healthMetricSupplier;
     private int healthUpdateIntervalMs;
     private int staleUpdateThresholdMs;
     private List<Healthcheck> healthchecks = Lists.newArrayList();
@@ -87,6 +89,11 @@ public class ServiceProviderBuilder<T> {
 
     public ServiceProviderBuilder<T> withNodeData(T nodeData) {
         this.nodeData = nodeData;
+        return this;
+    }
+
+    public ServiceProviderBuilder<T> withHealthMetricSupplier(Supplier<Double> healthMetricSupplier) {
+        this.healthMetricSupplier = healthMetricSupplier;
         return this;
     }
 
@@ -154,7 +161,7 @@ public class ServiceProviderBuilder<T> {
         healthchecks.add(serviceHealthAggregator);
         return new ServiceProvider<>(serviceName, serializer, curatorFramework,
                 new ServiceNode<>(hostname, port, nodeData), healthchecks,
-                healthUpdateIntervalMs, staleUpdateThresholdMs, serviceHealthAggregator);
+                healthMetricSupplier, healthUpdateIntervalMs, staleUpdateThresholdMs, serviceHealthAggregator);
     }
 
 }

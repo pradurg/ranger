@@ -22,6 +22,7 @@ public class ServiceNode<T> {
     private String host;
     private int port;
     private T nodeData;
+    private double healthMetric;
     private HealthcheckStatus healthcheckStatus = HealthcheckStatus.healthy;
     private long lastUpdatedTimeStamp = Long.MIN_VALUE;
 
@@ -56,6 +57,14 @@ public class ServiceNode<T> {
 
     public void setNodeData(T nodeData) {
         this.nodeData = nodeData;
+    }
+
+    public double getHealthMetric() {
+        return healthMetric;
+    }
+
+    public void setHealthMetric(double healthMetric) {
+        this.healthMetric = healthMetric;
     }
 
     public String representation() {
